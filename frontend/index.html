@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PennyWise AI | Student Finance</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f5fa;
+      color: #172033;
+    }
+
+    header {
+      background: #172554;
+      color: white;
+      padding: 22px 7%;
+    }
+
+    header h1 { margin: 0; }
+    header p { margin-bottom: 0; color: #dbeafe; }
+
+    main {
+      max-width: 1000px;
+      margin: 28px auto;
+      padding: 0 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 3px 14px #0000000b;
+      margin-bottom: 18px;
+    }
+
+    .label { color: #64748b; font-size: 14px; }
+    .amount { font-size: 27px; font-weight: bold; margin-top: 10px; }
+
+    h2 { margin-top: 0; font-size: 20px; }
+
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 15px;
+    }
+
+    button {
+      border: none;
+      background: #2563eb;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover { background: #1d4ed8; }
+
+    .insight {
+      background: #eff6ff;
+      border-left: 4px solid #2563eb;
+      padding: 13px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+
+    .transaction {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .income { color: #15803d; }
+    .expense { color: #dc2626; }
+
+    footer {
+      text-align: center;
+      color: #64748b;
+      padding: 20px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>💰 PennyWise AI</h1>
+    <p>Smart money management for students</p>
+  </header>
+
+  <main>
+    <section class="grid">
+      <div class="card">
+        <div class="label">Total Income</div>
+        <div class="amount" id="incomeTotal">₹0</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Total Expenses</div>
+        <div class="amount" id="expenseTotal">₹0</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Available Balance</div>
+        <div class="amount" id="balanceTotal">₹0</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>➕ Add a Transaction</h2>
+
+      <form id="transactionForm">
+        <input id="description" placeholder="Description (e.g. Lunch)" required>
+
+        <input id="amount" type="number" min="0.01" step="0.01"
+          placeholder="Amount in ₹" required>
+
+        <select id="type">
+          <option value="expense">Expense</option>
+          <option value="income">Income</option>
+        </select>
+
+        <select id="category">
+          <option>Food</option>
+          <option>Transport</option>
+          <option>Education</option>
+          <option>Entertainment</option>
+          <option>Pocket Money</option>
+          <option>Other</option>
+        </select>
+
+        <button type="submit">Add Transaction</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>🤖 Spending Insights</h2>
+      <div id="insights">
+        <div class="insight">
+          Add transactions to receive spending insights.
+        </div>
+      </div>
+      <p class="label">
+        These initial insights use simple rules and are not a trained ML model.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>📋 Recent Transactions</h2>
+      <div id="transactions">
+        <p class="label">No transactions added yet.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    PennyWise AI · Student Finance Management Prototype
+  </footer>
+
+  <script>
+    let transactions = [];
+
+    const formatMoney = amount =>
+      "₹" + amount.toLocaleString("en-IN", {
+        maximumFractionDigits: 2
+      });
+
+    function updateDashboard() {
+      const income = transactions
+        .filter(t => t.type === "income")
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      const expenses = transactions
+        .filter(t => t.type === "expense")
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      document.getElementById("incomeTotal").textContent =
+        formatMoney(income);
+
+      document.getElementById("expenseTotal").textContent =
+        formatMoney(expenses);
+
+      document.getElementById("balanceTotal").textContent =
+        formatMoney(income - expenses);
+
+      renderTransactions();
+      renderInsights(income, expenses);
+    }
+
+    function renderTransactions() {
+      const container = document.getElementById("transactions");
+      container.replaceChildren();
+
+      if (transactions.length === 0) {
+        const message = document.createElement("p");
+        message.className = "label";
+        message.textContent = "No transactions added yet.";
+        container.appendChild(message);
+        return;
+      }
+
+      [...transactions].reverse().forEach(t => {
+        const row = document.createElement("div");
+        row.className = "transaction";
+
+        const details = document.createElement("span");
+        details.textContent = `${t.description} · ${t.category}`;
+
+        const amount = document.createElement("strong");
+        amount.className = t.type;
+        amount.textContent =
+          (t.type === "income" ? "+" : "-") + formatMoney(t.amount);
+
+        row.append(details, amount);
+        container.appendChild(row);
+      });
+    }
+
+    function renderInsights(income, expenses) {
+      const container = document.getElementById("insights");
+      container.replaceChildren();
+
+      const messages = [];
+
+      if (transactions.length === 0) {
+        messages.push("Add transactions to receive spending insights.");
+      } else if (income === 0) {
+        messages.push("Add your income to understand your budget.");
+      } else if (expenses > income) {
+        messages.push("Your expenses exceed your income. Review your spending.");
+      } else if ((income - expenses) / income < 0.20) {
+        messages.push("Your remaining balance is low. Review non-essential expenses.");
+      } else {
+        messages.push("Your spending is within your income. Keep tracking it.");
+      }
+
+      const categories = {};
+
+      transactions
+        .filter(t => t.type === "expense")
+        .forEach(t => {
+          categories[t.category] =
+            (categories[t.category] || 0) + t.amount;
+        });
+
+      const names = Object.keys(categories);
+
+      if (names.length > 0) {
+        const highest = names.reduce((a, b) =>
+          categories[a] > categories[b] ? a : b
+        );
+
+        messages.push(
+          `Your highest-spending category is ${highest} (${formatMoney(categories[highest])}).`
+        );
+      }
+
+      messages.forEach(message => {
+        const item = document.createElement("div");
+        item.className = "insight";
+        item.textContent = message;
+        container.appendChild(item);
+      });
+    }
+
+    document.getElementById("transactionForm")
+      .addEventListener("submit", event => {
+        event.preventDefault();
+
+        const description =
+          document.getElementById("description").value.trim();
+
+        const amount =
+          Number(document.getElementById("amount").value);
+
+        const type = document.getElementById("type").value;
+        const category = document.getElementById("category").value;
+
+        if (!description || !Number.isFinite(amount) || amount <= 0) {
+          alert("Enter a description and a valid positive amount.");
+          return;
+        }
+
+        transactions.push({
+          description,
+          amount,
+          type,
+          category
+        });
+
+        event.target.reset();
+        updateDashboard();
+      });
+
+    updateDashboard();
+  </script>
+</body>
+</html>
