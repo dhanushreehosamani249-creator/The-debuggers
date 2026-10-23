@@ -1,1 +1,1 @@
-# AI/ML module for PennyWise AI.
+# PennyWise AI backend application package.
