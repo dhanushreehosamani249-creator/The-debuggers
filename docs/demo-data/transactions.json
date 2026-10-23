@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "amount": 8000,
+    "type": "income",
+    "category": "Pocket Money",
+    "description": "Monthly allowance",
+    "date": "2026-10-01"
+  },
+  {
+    "id": 2,
+    "amount": 1200,
+    "type": "expense",
+    "category": "Food",
+    "description": "Food expenses",
+    "date": "2026-10-05"
+  },
+  {
+    "id": 3,
+    "amount": 500,
+    "type": "expense",
+    "category": "Transport",
+    "description": "Bus travel",
+    "date": "2026-10-10"
+  },
+  {
+    "id": 4,
+    "amount": 750,
+    "type": "expense",
+    "category": "Education",
+    "description": "Study materials",
+    "date": "2026-10-15"
+  },
+  {
+    "id": 5,
+    "amount": 300,
+    "type": "expense",
+    "category": "Entertainment",
+    "description": "Entertainment expenses",
+    "date": "2026-10-20"
+  }
+]
