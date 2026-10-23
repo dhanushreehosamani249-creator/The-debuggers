@@ -1,2 +1,2 @@
-# PennyWise AI backend dependencies
-# The current spending-insights prototype uses Python's standard library.
+fastapi
+uvicorn
