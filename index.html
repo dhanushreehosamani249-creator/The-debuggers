@@ -6,7 +6,9 @@
   <title>PennyWise AI | Student Finance</title>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -21,8 +23,14 @@
       padding: 22px 7%;
     }
 
-    header h1 { margin: 0; }
-    header p { margin-bottom: 0; color: #dbeafe; }
+    header h1 {
+      margin: 0;
+    }
+
+    header p {
+      margin-bottom: 0;
+      color: #dbeafe;
+    }
 
     main {
       max-width: 1000px;
@@ -44,10 +52,21 @@
       margin-bottom: 18px;
     }
 
-    .label { color: #64748b; font-size: 14px; }
-    .amount { font-size: 27px; font-weight: bold; margin-top: 10px; }
+    .label {
+      color: #64748b;
+      font-size: 14px;
+    }
 
-    h2 { margin-top: 0; font-size: 20px; }
+    .amount {
+      font-size: 27px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 20px;
+    }
 
     form {
       display: grid;
@@ -71,7 +90,9 @@
       cursor: pointer;
     }
 
-    button:hover { background: #1d4ed8; }
+    button:hover {
+      background: #1d4ed8;
+    }
 
     .insight {
       background: #eff6ff;
@@ -89,8 +110,13 @@
       border-bottom: 1px solid #e2e8f0;
     }
 
-    .income { color: #15803d; }
-    .expense { color: #dc2626; }
+    .income {
+      color: #15803d;
+    }
+
+    .expense {
+      color: #dc2626;
+    }
 
     footer {
       text-align: center;
@@ -129,10 +155,20 @@
       <h2>➕ Add a Transaction</h2>
 
       <form id="transactionForm">
-        <input id="description" placeholder="Description (e.g. Lunch)" required>
+        <input
+          id="description"
+          placeholder="Description (e.g. Lunch)"
+          required
+        >
 
-        <input id="amount" type="number" min="0.01" step="0.01"
-          placeholder="Amount in ₹" required>
+        <input
+          id="amount"
+          type="number"
+          min="0.01"
+          step="0.01"
+          placeholder="Amount in ₹"
+          required
+        >
 
         <select id="type">
           <option value="expense">Expense</option>
@@ -160,7 +196,7 @@
         </div>
       </div>
       <p class="label">
-        These initial insights use simple rules and are not a trained ML model.
+        Insights currently use simple rules, not a trained ML model.
       </p>
     </section>
 
@@ -228,7 +264,8 @@
         const amount = document.createElement("strong");
         amount.className = t.type;
         amount.textContent =
-          (t.type === "income" ? "+" : "-") + formatMoney(t.amount);
+          (t.type === "income" ? "+" : "-") +
+          formatMoney(t.amount);
 
         row.append(details, amount);
         container.appendChild(row);
@@ -242,15 +279,25 @@
       const messages = [];
 
       if (transactions.length === 0) {
-        messages.push("Add transactions to receive spending insights.");
+        messages.push(
+          "Add transactions to receive spending insights."
+        );
       } else if (income === 0) {
-        messages.push("Add your income to understand your budget.");
+        messages.push(
+          "Add your income to understand your budget."
+        );
       } else if (expenses > income) {
-        messages.push("Your expenses exceed your income. Review your spending.");
+        messages.push(
+          "Your expenses exceed your income. Review your spending."
+        );
       } else if ((income - expenses) / income < 0.20) {
-        messages.push("Your remaining balance is low. Review non-essential expenses.");
+        messages.push(
+          "Your remaining balance is low. Review non-essential expenses."
+        );
       } else {
-        messages.push("Your spending is within your income. Keep tracking it.");
+        messages.push(
+          "Your spending is within your income. Keep tracking it."
+        );
       }
 
       const categories = {};
@@ -282,36 +329,6 @@
       });
     }
 
-    document.getElementById("transactionForm")
+    document
+      .getElementById("transactionForm")
       .addEventListener("submit", event => {
-        event.preventDefault();
-
-        const description =
-          document.getElementById("description").value.trim();
-
-        const amount =
-          Number(document.getElementById("amount").value);
-
-        const type = document.getElementById("type").value;
-        const category = document.getElementById("category").value;
-
-        if (!description || !Number.isFinite(amount) || amount <= 0) {
-          alert("Enter a description and a valid positive amount.");
-          return;
-        }
-
-        transactions.push({
-          description,
-          amount,
-          type,
-          category
-        });
-
-        event.target.reset();
-        updateDashboard();
-      });
-
-    updateDashboard();
-  </script>
-</body>
-</html>
