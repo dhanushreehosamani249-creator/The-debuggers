@@ -1,43 +1,46 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List
 
-from app.ml.insights import generate_insights
+app = FastAPI(
+title="PennyWise API",
+description="Backend for the student finance management app",
+version="1.0.0"
+)
 
-app = FastAPI(title="PennyWise AI API")
+class Expense(BaseModel):
+amount: float
+category: str
+description: str = ""
 
-
-class Transaction(BaseModel):
-    amount: float
-    type: str
-    category: str
-    description: Optional[str] = ""
-    date: Optional[str] = ""
-
-
-class InsightsRequest(BaseModel):
-    income: float
-    expenses: List[Transaction]
-
+expenses: List[Expense] = []
 
 @app.get("/")
 def home():
-    return {
-        "message": "Welcome to PennyWise AI",
-        "status": "running"
-    }
+return {
+"message": "Welcome to PennyWise API",
+"status": "running"
+}
 
+@app.get("/health")
+def health():
+return {"status": "healthy"}
 
-@app.post("/insights")
-def get_insights(data: InsightsRequest):
-    expenses = [
-        item.model_dump()
-        for item in data.expenses
-    ]
+@app.post("/expenses")
+def add_expense(expense: Expense):
+if expense.amount <= 0:
+return {"error": "Amount must be greater than zero"}
 
-    insights = generate_insights(
-        data.income,
-        expenses
-    )
+expenses.append(expense)
 
-    return {"insights": insights}
+return {
+    "message": "Expense added successfully",
+    "expense": expense
+}
+
+@app.get("/expenses")
+def get_expenses():
+return {
+"total_expenses": len(expenses),
+"expenses": expenses
+}
