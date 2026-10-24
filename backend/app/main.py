@@ -44,3 +44,56 @@ return {
 "total_expenses": len(expenses),
 "expenses": expenses
 }
+
+
+from app.ml.insights import (
+    generate_insights,
+    predict_monthly_expenses,
+    detect_unusual_spending,
+    recommend_savings,
+)
+
+
+@app.get("/ai/insights")
+def ai_insights(income: float):
+    expense_data = [
+        {
+            "amount": item.amount,
+            "type": "expense",
+            "category": item.category,
+        }
+        for item in expenses
+    ]
+
+    return {
+        "insights": generate_insights(income, expense_data)
+    }
+
+
+@app.get("/ai/predict")
+def ai_predict():
+    monthly_totals = [sum(item.amount for item in expenses)]
+    return {
+        "predicted_expenses": predict_monthly_expenses(
+            monthly_totals
+        )
+    }
+
+
+@app.get("/ai/unusual-spending")
+def ai_unusual_spending():
+    expense_data = [
+        {
+            "amount": item.amount,
+            "type": "expense",
+            "category": item.category,
+        }
+        for item in expenses
+    ]
+
+    return {
+        "unusual_spending": detect_unusual_spending(
+            expense_data
+        )
+    }
+
